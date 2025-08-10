@@ -24,7 +24,8 @@ set(C_SRCS
     #Application logic files
 
     #uC hw files
-   
+    hw/uc_hw/core_init/core_init.c
+    hw/uc_hw/exceptions/exceptions.c
 
    
 )
