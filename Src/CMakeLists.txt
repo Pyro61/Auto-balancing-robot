@@ -33,6 +33,7 @@ set(C_SRCS
 set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
+    pid/pid.cpp
 
     #External hw files
 
