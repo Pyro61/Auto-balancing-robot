@@ -149,7 +149,7 @@ g_pfnVectors:
   .word	RCC_IRQHandler                			/* RCC global interrupt                                   */
   .word	EXTI0_1_IRQHandler            			/* EXTI line 0 and 1 interrupt                            */
   .word	EXTI2_3_IRQHandler            			/* EXTI line 2 and 3 interrupt                            */
-  .word	EXTI4_5_IRQHandler            			/* EXTI line 4 and 5 interrupt                            */
+  .word	EXTI4_15_IRQHandler            			/* EXTI line 4 and 5 interrupt                            */
   .word	0                             			/* Reserved                                               */
   .word	DMA1_Channel1_IRQHandler      			/* DMA1 channel 1 interrupt                               */
   .word	DMA1_Channel2_3_IRQHandler    			/* DMA1 channel 2 and 3 interrupts                        */
