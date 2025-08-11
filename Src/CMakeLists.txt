@@ -26,6 +26,7 @@ set(C_SRCS
     #uC hw files
     hw/uc_hw/core_init/core_init.c
     hw/uc_hw/exceptions/exceptions.c
+    hw/uc_hw/gpio/gpio.c
 
    
 )
