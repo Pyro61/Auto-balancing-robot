@@ -35,9 +35,10 @@ set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
     pid/pid.cpp
+    motors/motors.cpp
 
     #External hw files
-
+    
 )
 
 set(ASM_SRCS
