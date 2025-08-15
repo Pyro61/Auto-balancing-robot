@@ -38,7 +38,7 @@ set (CXX_SRCS
     motors/motors.cpp
 
     #External hw files
-    
+    hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
 )
 
 set(ASM_SRCS
