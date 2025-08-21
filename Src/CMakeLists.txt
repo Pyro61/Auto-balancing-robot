@@ -27,6 +27,7 @@ set(C_SRCS
     hw/uc_hw/core_init/core_init.c
     hw/uc_hw/exceptions/exceptions.c
     hw/uc_hw/gpio/gpio.c
+    hw/uc_hw/tim/tim.c
 
    
 )
@@ -35,9 +36,11 @@ set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
     pid/pid.cpp
+    motors/motors.cpp
+    motors/motors_implementation.cpp
 
     #External hw files
-
+    hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
 )
 
 set(ASM_SRCS
