@@ -4,11 +4,6 @@
 #include "../../uc_hw/tim/tim.h"
 
 
-/* Motor objects */
-static pwm_motor left_motor(PORT_B, 10, PORT_B, 11, PORT_B, 12, 1, PWM_PLUS_DIR);
-static pwm_motor right_motor(PORT_B, 13, PORT_B, 14, PORT_B, 15, 2, PWM_PLUS_DIR);
-
-
 pwm_motor::pwm_motor(enum gpio_port port_en, uint8_t pin_en, enum gpio_port port_mode, uint8_t pin_mode, \
                      enum gpio_port port_dir, uint8_t pin_dir, uint8_t ch, enum motor_driver_mode mode)
 {
@@ -34,9 +29,6 @@ void pwm_motor::set_speed(speed_t value)
         TIM3_update_pwm_duty(pwm_ch, speed);
         TIM3_start_counter();
     }
-
-
-    
 }
 
 void pwm_motor::set_direction(enum direction value)
