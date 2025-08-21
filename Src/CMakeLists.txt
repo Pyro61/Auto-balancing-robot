@@ -37,6 +37,7 @@ set (CXX_SRCS
     rtos_wrapper/rtos_hooks.cpp
     pid/pid.cpp
     motors/motors.cpp
+    motors/motors_implementation.cpp
 
     #External hw files
     hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
