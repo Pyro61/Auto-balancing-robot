@@ -31,3 +31,8 @@ void motor::stop()
     speed = 0;
     dir = STOP;
 }
+
+void motor::init()
+{
+    /* Do nothing */
+}

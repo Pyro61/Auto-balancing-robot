@@ -24,6 +24,7 @@ class motor
     virtual void set_speed(speed_t value);
     virtual void set_direction(enum direction value);
     virtual void stop();
+    virtual void init();
 };
 
 
