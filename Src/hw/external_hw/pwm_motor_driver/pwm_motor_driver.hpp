@@ -21,6 +21,8 @@ class pwm_motor : public motor
     enum gpio_port gpio_port_driver_enable;     
     uint8_t gpio_pin_driver_enable;             /* 1 - activate driver and  latch selected mode */
                                                 /* 0 - enable low power mode */
+                                                
+    enum motor_driver_mode selected_mode;
     enum gpio_port gpio_port_mode;              
     uint8_t gpio_pin_mode;                      /* Selected mode */
 
@@ -39,6 +41,7 @@ class pwm_motor : public motor
     void set_speed(speed_t value) override;
     void set_direction(enum direction value) override;
     void stop() override;
+    void init() override;
 };
 
 

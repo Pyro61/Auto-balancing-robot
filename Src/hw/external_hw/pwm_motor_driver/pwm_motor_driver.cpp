@@ -6,7 +6,7 @@
 
 /* Motor objects */
 static pwm_motor left_motor(PORT_B, 10, PORT_B, 11, PORT_B, 12, 1, PWM_PLUS_DIR);
-static pwm_motor right_motor(PORT_B, 13, PORT_B, 14, PORT_B, 15, 2, PWM_PLUS_DIR); //move timer gpio to timer module, init all there, choose between motors by channels
+static pwm_motor right_motor(PORT_B, 13, PORT_B, 14, PORT_B, 15, 2, PWM_PLUS_DIR);
 
 
 pwm_motor::pwm_motor(enum gpio_port port_en, uint8_t pin_en, enum gpio_port port_mode, uint8_t pin_mode, \
@@ -14,13 +14,12 @@ pwm_motor::pwm_motor(enum gpio_port port_en, uint8_t pin_en, enum gpio_port port
 {
     gpio_port_driver_enable = port_en;
     gpio_pin_driver_enable = pin_en;
+    selected_mode = mode;
     gpio_port_mode = port_mode;
     gpio_pin_mode = pin_mode;
     gpio_port_dir = port_dir;
     gpio_pin_dir = pin_dir;
     pwm_ch = ch;
-
-    /* GPIO config */
 }
 
 void pwm_motor::set_speed(speed_t value)
@@ -42,16 +41,45 @@ void pwm_motor::stop()
     dir = STOP;
 }
 
+void pwm_motor::init()
+{
+    /* GPIO config */
+    switch(selected_mode)
+    {
+        case PWM_PLUS_DIR:
+        {
+            gpio_config(gpio_port_mode, gpio_pin_mode, OUTPUT, PUSH_PULL, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_mode, gpio_pin_mode, LOW);
 
+            gpio_config(gpio_port_driver_enable, gpio_pin_driver_enable, OUTPUT, PUSH_PULL, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_driver_enable, gpio_pin_driver_enable, HIGH);
+            break;
+        }
 
+        case PWM_PLUS_PWM:
+        {
+            gpio_config(gpio_port_mode, gpio_pin_mode, OUTPUT, PUSH_PULL, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_mode, gpio_pin_mode, HIGH);
 
+            gpio_config(gpio_port_driver_enable, gpio_pin_driver_enable, OUTPUT, PUSH_PULL, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_driver_enable, gpio_pin_driver_enable, HIGH);
+            break;
+        }
 
-//timer
-//tim 3 right ch2
-//left ch1
-//gpio timer af
-//right - pb5 af1
-//left - pb4 af1
+        case HALF_BRIDGE:
+        {
+            gpio_config(gpio_port_mode, gpio_pin_mode, OUTPUT, OPEN_DRAIN, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_mode, gpio_pin_mode, HIGH); /* Hi-Z state */
+
+            gpio_config(gpio_port_driver_enable, gpio_pin_driver_enable, OUTPUT, PUSH_PULL, NO_PULL, SPEED_LOW);
+            gpio_output_write(gpio_port_driver_enable, gpio_pin_driver_enable, HIGH);
+            break;
+        }
+
+        default: /* Do nothing */
+        break;
+    }
+}
 
 
 
