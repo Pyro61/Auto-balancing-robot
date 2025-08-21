@@ -24,21 +24,48 @@ pwm_motor::pwm_motor(enum gpio_port port_en, uint8_t pin_en, enum gpio_port port
 
 void pwm_motor::set_speed(speed_t value)
 {
-    /* For now value = pwm duty, later when encoders will be implemented value will be calculated to pwm duty */
-    speed = value;
-    //if dir = stop activate tim first then pwm duty
+    /* Log/Debug purposes */
+    speed = value;  /* For now value = pwm duty, later when encoders will be implemented value will be calculated to pwm duty */
+    
+    /* Set pwm only if needed */
+    if ((dir != STOP) && (speed > 0))
+    {   
+        /* HW handling */
+        TIM3_update_pwm_duty(pwm_ch, speed);
+        TIM3_start_counter();
+    }
+
+
     
 }
 
 void pwm_motor::set_direction(enum direction value)
 {
+    /* Log/Debug purposes */
     dir = value;
+
+    /* HW handling */
+    if (dir == FORWARD)
+    {
+       gpio_output_write(gpio_port_dir, gpio_pin_dir, HIGH); 
+    }
+
+    else if (dir == BACKWARDS)
+    {
+        gpio_output_write(gpio_port_dir, gpio_pin_dir, LOW); 
+    }
+    
 }
 
 void pwm_motor::stop()
 {
+    /* Log/Debug purposes */
     speed = 0;
     dir = STOP;
+
+    /* HW handling */
+    TIM3_update_pwm_duty(pwm_ch, speed);
+    TIM3_stop_counter();
 }
 
 void pwm_motor::init()
