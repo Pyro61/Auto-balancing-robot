@@ -22,6 +22,7 @@ set(C_SRCS
     Core/Src/sysmem.c
 
     #Application logic files
+    safe_state/safe_state.c
 
     #uC hw files
     hw/uc_hw/core_init/core_init.c
