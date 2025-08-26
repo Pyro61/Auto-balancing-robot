@@ -29,6 +29,7 @@ set(C_SRCS
     hw/uc_hw/exceptions/exceptions.c
     hw/uc_hw/gpio/gpio.c
     hw/uc_hw/tim/tim.c
+    hw/uc_hw/i2c/i2c.c
 
    
 )
