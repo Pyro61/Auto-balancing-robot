@@ -18,7 +18,7 @@
 
 #define DATA_SIZE                       (ACCELEROMETER_DATA_SIZE + TEMPERATURE_DATA_SIZE + GYROSCOPE_DATA_SIZE)
 
-#define DEGREE_CONVERTER                (180.0f / 3.14f)
+#define RAD_TO_DEG                      (180.0f / 3.14f)
 #define MS_TO_S(t)                      ((float)((float)t / 1000.0f))
 
 /* Data read buffer */
@@ -57,12 +57,12 @@ void mpu6050::update_data()
 void mpu6050::calculate_xyz_to_rpy()
 {
     /* Calculate raw to xyz */
-    acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER * DEGREE_CONVERTER;
-    acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER * DEGREE_CONVERTER;
-    acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER * DEGREE_CONVERTER;
-    gyro_x = (float)(read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER * DEGREE_CONVERTER;
-    gyro_y = (float)(read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER * DEGREE_CONVERTER;
-    gyro_z = (float)(read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER * DEGREE_CONVERTER;
+    acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
+    acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
+    acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
+    gyro_x = (float)(read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
+    gyro_y = (float)(read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
+    gyro_z = (float)(read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
 
     /* Calculate xyz to rpy */
     roll = atan2(acc_y, acc_z);
