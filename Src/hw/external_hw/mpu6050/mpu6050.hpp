@@ -3,18 +3,39 @@
 
 #include "../../../position_sensor/position_sensor.hpp"
 
+/* Device address */
+#define MPU6050_ADDR                        (0x68 << 1) /* 0xD0 */
+
+/* Raw data to xyz scalers */
+#define ACCELEROMETER_VALUE_SCALER          16384.0f    /* +/- 2g */
+#define GYROSCOPE_VALUE_SCALER              131.0f      /* 250deg/s */
+
+/* MPU6050 data sizes */
+#define ACCELEROMETER_DATA_SIZE             6
+#define TEMPERATURE_DATA_SIZE               2
+#define GYROSCOPE_DATA_SIZE                 6
+#define DATA_SIZE                           (ACCELEROMETER_DATA_SIZE + TEMPERATURE_DATA_SIZE + GYROSCOPE_DATA_SIZE)
+
+/* Calculations */
+#define RAD_TO_DEG                          (180.0f / 3.14f)
+#define MS_TO_S(t)                          ((float)((float)t / 1000.0f))
+
+/* Alpha coefficient */
+#define COMPLEMENTARY_FILTER_COEFFICIENT    0.05f
+
 class mpu6050 : public position_sensor
 {
     private:
-    /* Accelerometer data */
-    float acc_x;
-    float acc_y;
-    float acc_z;
+    /* Gyro data accumulated over time (val(n+1) += val(n) * dt) */
+    float roll_gyro;
+    float pitch_gyro;
+    float yaw_gyro;
 
-    /* Gyroscope data */
-    float gyro_x;
-    float gyro_y;
-    float gyro_z;
+    /* Data buffer */
+    uint8_t read_buffer[DATA_SIZE];
+
+    /* Complementary filter calculation */
+    float complementary_filter(float alpha, float acc_val, float gyro_val, float last_val);
     
     public:
     mpu6050();

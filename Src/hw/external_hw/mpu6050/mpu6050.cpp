@@ -7,25 +7,6 @@
 /* Scheduler -> mpu6050 task ->  mpu6050::read raw -> sleep  */
 
 
-
-#define MPU6050_ADDR                    (0xD0)      /* 0x68 << 1 */
-#define ACCELEROMETER_VALUE_SCALER      16384.0f    /* +/- 2g */
-#define GYROSCOPE_VALUE_SCALER          131.0f      /* 250deg/s */
-
-#define ACCELEROMETER_DATA_SIZE         6
-#define TEMPERATURE_DATA_SIZE           2
-#define GYROSCOPE_DATA_SIZE             6
-
-#define DATA_SIZE                       (ACCELEROMETER_DATA_SIZE + TEMPERATURE_DATA_SIZE + GYROSCOPE_DATA_SIZE)
-
-#define RAD_TO_DEG                      (180.0f / 3.14f)
-#define MS_TO_S(t)                      ((float)((float)t / 1000.0f))
-
-/* Data read buffer */
-static uint8_t read_buffer[DATA_SIZE]; /* Temporary read temperature too, with dedicated task
-                                          readings from gyro and accelerometer  will be seperated */
-
-
 mpu6050::mpu6050()
 {
     /* Do nothing (for now) */
@@ -50,23 +31,42 @@ void mpu6050::init(ms_t sample_timestamp)
 
 void mpu6050::update_data()
 {
-    while (!is_i2c1_bus_free()) // bez tej linii działa, z wysypuje się wtf
+    //while (!is_i2c1_bus_free())
     i2c1_read_dma(MPU6050_ADDR, 0x3B, read_buffer, DATA_SIZE, nullptr);
 }
 
 void mpu6050::calculate_xyz_to_rpy()
 {
     /* Calculate raw to xyz */
-    acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
-    acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
-    acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER * RAD_TO_DEG;
-    gyro_x = (float)(read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
-    gyro_y = (float)(read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
-    gyro_z = (float)(read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER * RAD_TO_DEG;
+    float acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER;
+    float acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER;
+    float acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER;
+    float gyro_x = (float)(read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER;
+    float gyro_y = (float)(read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER;
+    float gyro_z = (float)(read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER;
 
     /* Calculate xyz to rpy */
-    roll = atan2(acc_y, acc_z);
-    pitch = atan2(-acc_x, sqrt(acc_y * acc_y + acc_z * acc_z));
-    yaw += gyro_z * MS_TO_S(sample_time); /* Gyro drift - temporary solution */
+    /* Accelerometer */
+    float roll_acc = atan2f(acc_y, acc_z);
+    float pitch_acc = atan2f(-acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z));
+
+    /* Gyroscope */
+    float roll_gyro_now = gyro_x + tanf(pitch) * sinf(roll) * gyro_y   + cosf(roll) * tanf(pitch) * gyro_z;
+    float pitch_gyro_now =         cosf(roll) * gyro_y                 -  sinf(roll) * gyro_z;
+    float yaw_gyro_now =           (sinf(roll) / cosf(pitch)) * gyro_y + (cosf(roll) / cosf(pitch)) * gyro_z;
+    
+    roll_gyro += roll_gyro_now * MS_TO_S(sample_time);
+    pitch_gyro += pitch_gyro_now * MS_TO_S(sample_time);
+    yaw_gyro += yaw_gyro_now * MS_TO_S(sample_time);
+
+    /* Combine both sensor readings with complementary filter */
+    roll = complementary_filter(COMPLEMENTARY_FILTER_COEFFICIENT, roll_acc, roll_gyro, roll);
+    pitch = complementary_filter(COMPLEMENTARY_FILTER_COEFFICIENT, pitch_acc, pitch_gyro, pitch);
+    yaw = yaw_gyro; /* Not accurate - gyro drift (temporary solution) */
+}
+
+float mpu6050::complementary_filter(float alpha, float acc_val, float gyro_val, float last_val)
+{
+    return alpha * acc_val + (1.0f - alpha) * (last_val + gyro_val);
 }
 
