@@ -44,6 +44,7 @@ set (CXX_SRCS
 
     #External hw files
     hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
+    hw/external_hw/mpu6050/mpu6050.cpp
 )
 
 set(ASM_SRCS
