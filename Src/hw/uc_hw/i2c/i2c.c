@@ -16,10 +16,10 @@ void i2c1_init(void)
 {
 	/* GPIO settings
 	 * PB8 - SCL, PB9 - SDA */
-	if (gpio_config(PORT_B, 8, ALTERNATE_FUN, OPEN_DRAIN, NO_PULL, SPEED_HIGH) == ERR) safe_state();
-    if (gpio_set_af(PORT_B, 8, 4) == ERR) safe_state();
-    if (gpio_config(PORT_B, 9, ALTERNATE_FUN, OPEN_DRAIN, NO_PULL, SPEED_HIGH) == ERR) safe_state();
-    if (gpio_set_af(PORT_B, 9, 4) == ERR) safe_state();
+	if (gpio_config(PORT_B, 8, ALTERNATE_FUN, OPEN_DRAIN, PULL_UP, SPEED_HIGH) == ERR) safe_state();
+    if (gpio_set_af(PORT_B, 8, 6) == ERR) safe_state();
+    if (gpio_config(PORT_B, 9, ALTERNATE_FUN, OPEN_DRAIN, PULL_UP, SPEED_HIGH) == ERR) safe_state();
+    if (gpio_set_af(PORT_B, 9, 6) == ERR) safe_state();
 
 	/* I2C settings
 	 * Master mode, timing reg, STOP signal detection IRQ, disable analog filter, enable peripheral and enable own address 1 */
@@ -35,9 +35,9 @@ void i2c1_init(void)
 	 * Periph addr, priority, memory and periph sizes, mem inc mode, transfer complete and error IRQ, DMA request source */
 	DMA1_Channel2 -> CPAR = (uint32_t)&(I2C1 -> RXDR);
 	DMA1_Channel2 -> CCR |= DMA_CCR_PL_0 | DMA_CCR_MINC | DMA_CCR_TEIE | DMA_CCR_TCIE;
-    NVIC_SetPriority(DMA1_Channel1_IRQn, 1); /* Set low priority because inside irq callback fun is called */
-	NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-	DMAMUX1_Channel1 -> CCR |= 10;
+    NVIC_SetPriority(DMA1_Channel2_3_IRQn, 1); /* Set low priority because inside irq callback fun is called */
+	NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
+	DMAMUX1_Channel1 -> CCR |= 10; /* DMAMUX starts counting channels from 0 */
 }
 
 
@@ -105,9 +105,10 @@ void i2c1_read_dma(const uint8_t addr, const uint8_t reg, uint8_t *const buf, co
 
 	/* Write reg address to slave */
 	I2C1 -> CR2 = addr | (1 << 16);
-	I2C1 -> TXDR = reg;
 
 	I2C1 -> CR2 |= I2C_CR2_START;
+	while (!(I2C1->ISR & I2C_ISR_TXIS));
+	I2C1 -> TXDR = reg;
 	while (!(I2C1 -> ISR & I2C_ISR_TC));
 
 	/* DMA transfer settings */
@@ -116,7 +117,7 @@ void i2c1_read_dma(const uint8_t addr, const uint8_t reg, uint8_t *const buf, co
 	DMA1_Channel2 -> CMAR = (uint32_t)buf;
 
 	/* Read slave reg value */
-	I2C1 -> CR2 = addr | (size << 16) | I2C_CR2_RD_WRN;
+	I2C1 -> CR2 = addr | (size << 16) | I2C_CR2_RD_WRN | I2C_CR2_AUTOEND;
 
 	/* Start reading */
 	DMA1_Channel2 -> CCR |= DMA_CCR_EN;
@@ -125,7 +126,7 @@ void i2c1_read_dma(const uint8_t addr, const uint8_t reg, uint8_t *const buf, co
 
 
 /* I2C1 DMA reception end irq */
-void DMA1_CH2_IRQHandler(void)
+void DMA1_Channel2_3_IRQHandler(void)
 {
 	if (DMA1 -> ISR & DMA_ISR_TCIF2)
 	{
@@ -139,7 +140,7 @@ void DMA1_CH2_IRQHandler(void)
 		I2C1 -> CR1 &= ~I2C_CR1_RXDMAEN;
 
 		/* End I2C transmission */
-		I2C1 -> CR2 |= I2C_CR2_STOP;
+		//I2C1 -> CR2 |= I2C_CR2_STOP;
 
 		/* Reception end callback */
 		if (i2c1_recv_dma_cb != NULL)
@@ -151,7 +152,7 @@ void DMA1_CH2_IRQHandler(void)
 
 
 /* I2C1 Interrupt */
-void I2C1_EV_IRQHandler(void)
+void I2C_IRQHandler(void)
 {
 	if (I2C1 -> ISR & I2C_ISR_STOPF)
 	{
