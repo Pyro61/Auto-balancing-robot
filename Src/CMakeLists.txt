@@ -40,9 +40,12 @@ set (CXX_SRCS
     pid/pid.cpp
     motors/motors.cpp
     motors/motors_implementation.cpp
+    position_sensor/position_sensor.cpp
+    position_sensor/position_sensor_implementation.cpp
 
     #External hw files
     hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
+    hw/external_hw/mpu6050/mpu6050.cpp
 )
 
 set(ASM_SRCS
