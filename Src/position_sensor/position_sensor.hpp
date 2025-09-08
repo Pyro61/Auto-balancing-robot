@@ -3,15 +3,16 @@
 
 #include <cstdint>
 
-typedef uint32_t ms_t;
+typedef uint32_t ms_t; /* miliseconds */
+typedef float rad; /* radians */
 
 
 class position_sensor
 {
     protected:
-    float roll;
-    float pitch;
-    float yaw;
+    rad roll;
+    rad pitch;
+    rad yaw;
     ms_t sample_time;
 
     public:
