@@ -18,24 +18,29 @@
 
 /* Calculations */
 #define RAD_TO_DEG                          (180.0f / 3.14f)
+#define DEG_TO_RAD                          (0.0174533f)
 #define MS_TO_S(t)                          ((float)((float)t / 1000.0f))
 
 /* Alpha coefficient */
 #define COMPLEMENTARY_FILTER_COEFFICIENT    0.05f
 
+/* Physical units */
+typedef float m_per_s2 ; /* m/s^2 */
+typedef float rad_per_s; /* rad/s */
+
 class mpu6050 : public position_sensor
 {
     private:
     /* Gyro data accumulated over time (val(n+1) += val(n) * dt) */
-    float roll_gyro;
-    float pitch_gyro;
-    float yaw_gyro;
+    rad roll_gyro;
+    rad pitch_gyro;
+    rad yaw_gyro;
 
     /* Data buffer */
     uint8_t read_buffer[DATA_SIZE];
 
     /* Complementary filter calculation */
-    float complementary_filter(float alpha, float acc_val, float gyro_val, float last_val);
+    rad complementary_filter(float alpha, m_per_s2 acc_val, rad_per_s gyro_val, rad last_val);
     
     public:
     mpu6050();

@@ -38,22 +38,22 @@ void mpu6050::update_data()
 void mpu6050::calculate_xyz_to_rpy()
 {
     /* Calculate raw to xyz */
-    float acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER;
-    float acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER;
-    float acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER;
-    float gyro_x = (float)(read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER;
-    float gyro_y = (float)(read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER;
-    float gyro_z = (float)(read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER;
+    m_per_s2 acc_x = (float)(read_buffer[0] << 8 | read_buffer[1]) / ACCELEROMETER_VALUE_SCALER;    //dodać odejmowanie offsetu zmierzyć ile ma być
+    m_per_s2 acc_y = (float)(read_buffer[2] << 8 | read_buffer[3]) / ACCELEROMETER_VALUE_SCALER;
+    m_per_s2 acc_z = (float)(read_buffer[4] << 8 | read_buffer[5]) / ACCELEROMETER_VALUE_SCALER;
+    rad_per_s gyro_x = (float)((read_buffer[8] << 8 | read_buffer[9]) / GYROSCOPE_VALUE_SCALER) * DEG_TO_RAD;   /* Need to trasform from deg/s to rad/s */
+    rad_per_s gyro_y = (float)((read_buffer[10] << 8 | read_buffer[11]) / GYROSCOPE_VALUE_SCALER) * DEG_TO_RAD; /* Need to trasform from deg/s to rad/s */
+    rad_per_s gyro_z = (float)((read_buffer[12] << 8 | read_buffer[13]) / GYROSCOPE_VALUE_SCALER) * DEG_TO_RAD; /* Need to trasform from deg/s to rad/s */
 
     /* Calculate xyz to rpy */
     /* Accelerometer */
-    float roll_acc = atan2f(acc_y, acc_z);
-    float pitch_acc = atan2f(-acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z));
+    rad roll_acc = atan2f(acc_y, acc_z);
+    rad pitch_acc = atan2f(-acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z));
 
     /* Gyroscope */
-    float roll_gyro_now = gyro_x + tanf(pitch) * sinf(roll) * gyro_y   + cosf(roll) * tanf(pitch) * gyro_z;
-    float pitch_gyro_now =         cosf(roll) * gyro_y                 -  sinf(roll) * gyro_z;
-    float yaw_gyro_now =           (sinf(roll) / cosf(pitch)) * gyro_y + (cosf(roll) / cosf(pitch)) * gyro_z;
+    rad_per_s roll_gyro_now = gyro_x + tanf(pitch) * sinf(roll) * gyro_y   + cosf(roll) * tanf(pitch) * gyro_z;
+    rad_per_s pitch_gyro_now =         cosf(roll) * gyro_y                 -  sinf(roll) * gyro_z;
+    rad_per_s yaw_gyro_now =           (sinf(roll) / cosf(pitch)) * gyro_y + (cosf(roll) / cosf(pitch)) * gyro_z;
     
     roll_gyro += roll_gyro_now * MS_TO_S(sample_time);
     pitch_gyro += pitch_gyro_now * MS_TO_S(sample_time);
@@ -65,7 +65,7 @@ void mpu6050::calculate_xyz_to_rpy()
     yaw = yaw_gyro; /* Not accurate - gyro drift (temporary solution) */
 }
 
-float mpu6050::complementary_filter(float alpha, float acc_val, float gyro_val, float last_val)
+float mpu6050::complementary_filter(float alpha, m_per_s2 acc_val, rad_per_s gyro_val, rad last_val)
 {
     return alpha * acc_val + (1.0f - alpha) * (last_val + gyro_val);
 }
