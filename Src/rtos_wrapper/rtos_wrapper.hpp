@@ -1,7 +1,5 @@
-#ifndef _RTOS_WRAPPER_H_
-#define _RTOS_WRAPPER_H_
-
-#endif /* _RTOS_WRAPPER_H_ */
+#ifndef _RTOS_WRAPPER_
+#define _RTOS_WRAPPER_
 
 #ifdef __cplusplus
  extern "C" {
@@ -216,21 +214,26 @@
    taskEXIT_CRITICAL()
 
 /** Type of RTOS queue. */
-typedef void * queue_t;
+//typedef void * queue_t;
+typedef QueueHandle_t queue_t;
 
 /** Type of RTOS semaphore. */
-typedef void * sem_t;
-
+//typedef void * sem_t;
+typedef SemaphoreHandle_t sem_t;
 /** Type of RTOS mutex. */
-typedef void * mutex_t;
+//typedef void * mutex_t;
+typedef SemaphoreHandle_t mutex_t;
 
 /** Type of RTOS tick. */
 typedef TickType_t tick_t;
 
+
 #define RTOS_TASK_STACKSIZE_MIN     configMINIMAL_STACK_SIZE
 #define RTOS_PRIORITY_MIN           tskIDLE_PRIORITY
-
+#define RTOS_MAX_DELAY              portMAX_DELAY
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+#endif /* _RTOS_WRAPPER_ */
