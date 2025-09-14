@@ -41,6 +41,7 @@ set (CXX_SRCS
     pid/pid_tasks.cpp
     motors/motors.cpp
     motors/motors_implementation.cpp
+    motors/motors_tasks.cpp
     position_sensor/position_sensor.cpp
     position_sensor/position_sensor_implementation.cpp
     position_sensor/position_sensor_tasks.cpp
