@@ -123,12 +123,23 @@
 
 
 /**
- * Create RTOS semaphore.
+ * Create RTOS binary semaphore.
  *
  * @return              Handle to semaphore to be created.
  */
 #define rtos_sem_bin_create()                                           \
    xSemaphoreCreateBinary()
+
+
+/**
+ * Create RTOS counting semaphore.
+ *
+ * @return              Handle to semaphore to be created.
+ */
+#define rtos_sem_counting_create(max_count, initial_count)                     \
+   xSemaphoreCreateCounting(max_count, initial_count)
+
+
 
 /**
  * Acquire semaphore.
