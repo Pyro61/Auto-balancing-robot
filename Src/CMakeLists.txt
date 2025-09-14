@@ -38,6 +38,7 @@ set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
     pid/pid.cpp
+    pid/pid_tasks.cpp
     motors/motors.cpp
     motors/motors_implementation.cpp
     position_sensor/position_sensor.cpp
