@@ -62,6 +62,9 @@ void pwm_motor::stop()
 
 void pwm_motor::init()
 {
+    /* Timer config */
+    TIM3_init_pwm();
+    
     /* GPIO config */
     switch(selected_mode)
     {

@@ -38,10 +38,16 @@ set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
     pid/pid.cpp
+    pid/pid_tasks.cpp
     motors/motors.cpp
     motors/motors_implementation.cpp
+    motors/motors_tasks.cpp
     position_sensor/position_sensor.cpp
     position_sensor/position_sensor_implementation.cpp
+    position_sensor/position_sensor_tasks.cpp
+    control/control.cpp
+    hw/uc_hw/i2c/i2c_tasks.cpp
+    Core/Src/tasks_init.cpp
 
     #External hw files
     hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp

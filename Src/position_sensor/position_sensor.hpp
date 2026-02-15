@@ -18,10 +18,10 @@ class position_sensor
     public:
     position_sensor();
     virtual void init(ms_t sample_timestamp);
-    virtual void update_data();
-    float get_roll();
-    float get_pitch();
-    float get_yaw();
+    virtual void update_data(void* cb);
+    virtual float get_roll();
+    virtual float get_pitch();
+    virtual float get_yaw();
 };
 
 #endif /* _POSITION_SENSOR_ */
