@@ -46,6 +46,7 @@ set (CXX_SRCS
     position_sensor/position_sensor_implementation.cpp
     position_sensor/position_sensor_tasks.cpp
     control/control.cpp
+    hw/uc_hw/i2c/i2c_tasks.cpp
 
     #External hw files
     hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
