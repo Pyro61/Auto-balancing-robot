@@ -3,6 +3,8 @@
 
 #define SENSOR_READ_SAMPLE_TIME_MS     5
 
+static sem_t pos_calc_finished_sem;
+
 void calc_curr_pos(void *params)
 {
     /* Initialisation */
@@ -11,19 +13,26 @@ void calc_curr_pos(void *params)
     rpy_data data = {0};
     pos_data_queue = rtos_queue_create(3, sizeof(struct rpy_data));
     pos_calc_sem = rtos_sem_bin_create();
+    pos_calc_finished_sem = rtos_sem_bin_create();
 
     /* Data calculations */
     while(1)
     {
         if (rtos_sem_take(pos_calc_sem, RTOS_MAX_DELAY) == 1)
         {
-            sensor.update_data();
-            data.roll = sensor.get_roll();
-            data.pitch = sensor.get_pitch();
-            data.yaw = sensor.get_yaw();
+            /* Sensor data update request */
+            sensor.update_data(pos_calc_finished_sem);
 
-            /* Send current position to maintaining balance task */
-            rtos_queue_send(pos_data_queue, &data, RTOS_MAX_DELAY);
+            /* Data updated, get rpy values */
+            if (rtos_sem_take(pos_calc_finished_sem, RTOS_MAX_DELAY) == 1)
+            {
+                data.roll = sensor.get_roll();
+                data.pitch = sensor.get_pitch();
+                data.yaw = sensor.get_yaw();
+                
+                /* Send current position to maintaining balance task */
+                rtos_queue_send(pos_data_queue, &data, RTOS_MAX_DELAY);
+            }
         }
     }
 

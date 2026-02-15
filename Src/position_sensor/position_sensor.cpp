@@ -13,7 +13,7 @@ void position_sensor::init(ms_t sample_timestamp)
     sample_time = sample_timestamp;
 }
 
-void position_sensor::update_data()
+void position_sensor::update_data(void* cb)
 {
     /* Do nothing */
     /* In hw implementation read sensor registers and eventually calculate to rpy */
