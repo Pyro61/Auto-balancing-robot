@@ -2,6 +2,9 @@
 #include "rtos_wrapper.hpp"
 #include "motors.hpp"
 
+extern queue_t motor_steering_data_queue = nullptr;
+extern sem_t motor_stop_signal_sem = nullptr;
+
 
 /* Motor selection is made in task creation by passing correct motor object */
 void steer_motor(void *params)

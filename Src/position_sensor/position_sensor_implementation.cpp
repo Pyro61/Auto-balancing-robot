@@ -10,7 +10,7 @@ static mpu6050 pos_sensor;
 
 
 /* Return motor object */
-position_sensor& get_posision_sensor_object()
+position_sensor& get_position_sensor_object()
 {
     return pos_sensor;
 }

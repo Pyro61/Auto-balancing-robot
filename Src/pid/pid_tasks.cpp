@@ -14,6 +14,9 @@
 #define PID_MAX_INTEGRATOR      100
 #define PID_MIN_INTEGRATOR      (-PID_MAX_INTEGRATOR)
 
+extern queue_t pid_pitch_calc_queue = nullptr;
+extern queue_t pid_pitch_ready_queue = nullptr;
+
 
 
 void pitch_pid_calculation(void *params)

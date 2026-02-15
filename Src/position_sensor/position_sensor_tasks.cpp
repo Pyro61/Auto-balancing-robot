@@ -3,7 +3,10 @@
 
 #define SENSOR_READ_SAMPLE_TIME_MS     5
 
-static sem_t pos_calc_finished_sem;
+static sem_t pos_calc_finished_sem = nullptr;
+extern queue_t pos_data_queue = nullptr;
+extern sem_t pos_calc_sem = nullptr;
+
 
 void calc_curr_pos(void *params)
 {
