@@ -21,6 +21,7 @@ void maintain_balance(void *params)
 
     while (1)
     {
+        rtos_delay(5);
         /* Calculate data and wait for it */
         rtos_sem_give(pos_calc_sem);
 
