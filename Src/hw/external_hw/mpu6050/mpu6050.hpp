@@ -36,17 +36,27 @@ class mpu6050 : public position_sensor
     rad pitch_gyro;
     rad yaw_gyro;
 
+    /* Inform if calculating xyz to rpy is necessary 
+       True - calculating is not necessary
+       False - calculating is necessary */
+    bool is_xyz_calculated_to_rpy_flag;
+
     /* Data buffer */
     uint8_t read_buffer[DATA_SIZE];
 
     /* Complementary filter calculation */
     rad complementary_filter(float alpha, m_per_s2 acc_val, rad_per_s gyro_val, rad last_val);
+
+    /* Calculate data from xyz to rpy */
+    void calculate_xyz_to_rpy();
     
     public:
     mpu6050();
     void init(ms_t sample_timestamp) override;
-    void update_data() override;
-    void calculate_xyz_to_rpy();
+    void update_data(void* cb) override;
+    float get_roll() override;
+    float get_pitch() override;
+    float get_yaw() override;
 };
 
 #endif /* _MPU6050_ */
