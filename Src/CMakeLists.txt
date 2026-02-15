@@ -22,9 +22,14 @@ set(C_SRCS
     Core/Src/sysmem.c
 
     #Application logic files
+    safe_state/safe_state.c
 
     #uC hw files
-   
+    hw/uc_hw/core_init/core_init.c
+    hw/uc_hw/exceptions/exceptions.c
+    hw/uc_hw/gpio/gpio.c
+    hw/uc_hw/tim/tim.c
+    hw/uc_hw/i2c/i2c.c
 
    
 )
@@ -32,9 +37,21 @@ set(C_SRCS
 set (CXX_SRCS
     #Application logic files
     rtos_wrapper/rtos_hooks.cpp
+    pid/pid.cpp
+    pid/pid_tasks.cpp
+    motors/motors.cpp
+    motors/motors_implementation.cpp
+    motors/motors_tasks.cpp
+    position_sensor/position_sensor.cpp
+    position_sensor/position_sensor_implementation.cpp
+    position_sensor/position_sensor_tasks.cpp
+    control/control.cpp
+    hw/uc_hw/i2c/i2c_tasks.cpp
+    Core/Src/tasks_init.cpp
 
     #External hw files
-
+    hw/external_hw/pwm_motor_driver/pwm_motor_driver.cpp
+    hw/external_hw/mpu6050/mpu6050.cpp
 )
 
 set(ASM_SRCS

@@ -22,8 +22,10 @@
  * limitations under the License.
  */
 
-#ifndef __CMSIS_GCC_H
-#define __CMSIS_GCC_H
+#ifndef _CMSIS_GCC_
+#define _CMSIS_GCC_
+
+#include "stdint.h"
 
 /* ignore some GCC warnings */
 #pragma GCC diagnostic push
@@ -2208,4 +2210,4 @@ __STATIC_FORCEINLINE int32_t __SMMLA (int32_t op1, int32_t op2, int32_t op3)
 
 #pragma GCC diagnostic pop
 
-#endif /* __CMSIS_GCC_H */
+#endif /* _CMSIS_GCC_ */
