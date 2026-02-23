@@ -20,6 +20,38 @@ Chosen for low cost, good peripherals (timers/PWM, I²C, interrupts), and solid 
 
 XL4016 DC-DC Step-Down (Buck) Converter - Converts the battery voltage to stable lower voltage levels required by the electronics (e.g., logic supply for MCU and sensors). This ensures consistent system operation despite battery voltage variations during discharge.
 
+### System diagram
+
+```mermaid
+flowchart LR
+
+    BATT[2S Li-Ion Battery Pack<br/> + BMS]
+    BUCK[XL4016 Buck Converter]
+    MCU[STM32C031C6T6 MCU]
+    DRV1[DRV8874 Motor Driver 1]
+    DRV2[DRV8874 Motor Driver 2]
+    M1[Motor 1]
+    M2[Motor 2]
+    IMU[MPU6050 IMU]
+
+    %% Power path
+    BATT --> BUCK
+    BUCK --> MCU
+    BUCK --> DRV1
+    BUCK --> DRV2
+
+    %% Control signals
+    MCU --> DRV1
+    MCU --> DRV2
+
+    %% Motors
+    DRV1 --> M1
+    DRV2 --> M2
+
+    %% IMU communication
+    MCU <--> IMU
+```
+
 
 ## Software architecture
 
@@ -56,7 +88,7 @@ The main task repeatedly:
 
 This task runs fast enough (once every 5 ms) to keep the robot stable against disturbances.
 
-## Flowchart
+### Flowchart
 
 ```mermaid
 flowchart TD
@@ -72,36 +104,6 @@ flowchart TD
     G --> C
 ```
 
-## System diagram
 
-```mermaid
-flowchart LR
-
-    BATT[2S Li-Ion Battery Pack<br/> + BMS]
-    BUCK[XL4016 Buck Converter]
-    MCU[STM32C031C6T6 MCU]
-    DRV1[DRV8874 Motor Driver 1]
-    DRV2[DRV8874 Motor Driver 2]
-    M1[Motor 1]
-    M2[Motor 2]
-    IMU[MPU6050 IMU]
-
-    %% Power path
-    BATT --> BUCK
-    BUCK --> MCU
-    BUCK --> DRV1
-    BUCK --> DRV2
-
-    %% Control signals
-    MCU --> DRV1
-    MCU --> DRV2
-
-    %% Motors
-    DRV1 --> M1
-    DRV2 --> M2
-
-    %% IMU communication
-    MCU <--> IMU
-```
 
     
